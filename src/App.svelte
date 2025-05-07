@@ -1,72 +1,59 @@
 <script lang="ts">
 
-// State
-  let products = [
+  import ProductList from './components/ProductList/ProductList.svelte';
+  import Cart from './components/Cart/Cart.svelte';
+  import type { Product, CartItem } from './types';
+
+  let products: Product[] = [
     { id: 1, name: 'Book', price: 12 },
     { id: 2, name: 'Pen', price: 2 },
     { id: 3, name: 'Notebook', price: 5 }
   ];
 
-  let cart : any[] = [];
+  let cart: CartItem[] = [];
 
+  function addToCart(product: Product) {
+    const existingIndex = cart.findIndex((item) => item.id === product.id);
 
-// Functions
-
-  function add(p: any) {
-    cart.push({ ...p, qty: 1 }); // BUG 1: does not check if item already exists
-    cart = [...cart]
+    if (existingIndex !== -1) {
+      const updatedCart = [...cart];
+      updatedCart[existingIndex] = {
+        ...updatedCart[existingIndex],
+        qty: updatedCart[existingIndex].qty + 1
+      };
+      cart = updatedCart;
+    } else {
+      cart = [...cart, { ...product, qty: 1 }];
+    }
   }
 
-  function remove(pId: any) {
-    for (let i = 0; i < cart.length; i++) {
-      if (cart[i].id === pId) {
-        cart.splice(i, 1);
-      }
-    }
-    cart = [...cart]
-  }
-
-  function sum() {
-    let sum = 0;
-    for (let j = 0; j < cart.length; j++) {
-      sum = cart[j].price * cart[j].qty; // BUG 2: overwrites instead of accumulates
-    }
-    return sum;
+  function removeFromCart(id: number) {
+    cart = cart.filter((item) => item.id !== id);
   }
 </script>
 
+<main>
+  <h2>Products</h2>
+  <ProductList {products} on:add={(e) => addToCart(e.detail)} />
 
-<h2>Products</h2>
-{#each products as p}
-  <div class="product">
-    {p.name} - ${p.price}
-    <button on:click={() => add(p)}>Add</button>
-  </div>
-{/each}
-
-<h2>Cart</h2>
-<ul>
-  {#if cart.length === 0}
-    <p>No items in cart.</p>
-  {:else}
-    {#each cart as item}
-      <li>
-        {item.name} x {item.qty}
-        <button on:click={() => remove(item.id)}>Remove</button>
-      </li>
-    {/each}
-  {/if}
-  
-</ul>
-
-<p>
-  <strong>Total:</strong> ${sum()}
-</p>
+  <h2>Cart</h2>
+  <Cart {cart} on:remove={(e) => removeFromCart(e.detail)} />
+</main>
 
 
 
 <style>
-
-  button { margin-left: 10px; }
+    h2 {
+      margin-top: 1.5rem;
+      font-size: 1.5rem;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 0.25rem;
+    }
   
+    main {
+      max-width: 600px;
+      margin: auto;
+      font-family: Arial, sans-serif;
+      padding: 1rem;
+    }
 </style>
