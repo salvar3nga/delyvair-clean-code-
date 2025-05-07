@@ -13,7 +13,7 @@
 // Functions
 
   function add(p: any) {
-    cart.push({ ...p, qty: 1 }); // BUG 1: does not check if item already exists
+    cart.push({ ...p, qty: 1 }); 
     cart = [...cart]
   }
 
@@ -29,7 +29,7 @@
   function sum() {
     let sum = 0;
     for (let j = 0; j < cart.length; j++) {
-      sum = cart[j].price * cart[j].qty; // BUG 2: overwrites instead of accumulates
+      sum = cart[j].price * cart[j].qty; 
     }
     return sum;
   }
@@ -39,7 +39,7 @@
 <h2>Products</h2>
 {#each products as p}
   <div class="product">
-    {p.name} - ${p.price}
+    {p.name} - {p.price}€
     <button on:click={() => add(p)}>Add</button>
   </div>
 {/each}
@@ -60,7 +60,7 @@
 </ul>
 
 <p>
-  <strong>Total:</strong> ${sum()}
+  <strong>Total:</strong> {sum()}€
 </p>
 
 
